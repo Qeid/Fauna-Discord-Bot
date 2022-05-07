@@ -1,0 +1,111 @@
+on load:
+    load yaml "plugins/Skript/scripts/Fauna/config/config.yml" as "plugins/Skript/scripts/Fauna/config/config.yml"
+function builderNewSlash(n: string, d: string) :: object:
+    set {_nslash} to new slash command named "%{_n}%" with desc {_d}
+    return {_nslash}
+
+
+function builderNewOption(v: object, n: string, d: string, t: string="string", o: boolean=false):
+    if {_t} = "string":
+        if {_o} = false:
+            add required string option named "%{_n}%" with description "%{_d}%" to options of {_v}
+        
+        else:
+            add string option named "%{_n}%" with description "%{_d}%" to options of {_v}
+
+    if {_t} = "boolean":
+        if {_o} = false:
+            add required boolean option named "%{_n}%" with description "%{_d}%" to options of {_v}
+        
+        else:
+            add boolean option named "%{_n}%" with description "%{_d}%" to options of {_v}
+
+    if {_t} = "user":
+        if {_o} = false:
+            add required user option named "%{_n}%" with description "%{_d}%" to options of {_v}
+        
+        else:
+            add user option named "%{_n}%" with description "%{_d}%" to options of {_v}
+    
+    if {_t} = "integer":
+        if {_o} = false:
+            add required integer option named "%{_n}%" with description "%{_d}%" to options of {_v}
+        
+        else:
+            add integer option named "%{_n}%" with description "%{_d}%" to options of {_v}
+
+    if {_t} = "number":
+        if {_o} = false:
+            add required number option named "%{_n}%" with description "%{_d}%" to options of {_v}
+        
+        else:
+            add number option named "%{_n}%" with description "%{_d}%" to options of {_v}
+    
+    if {_t} = "channel":
+        if {_o} = false:
+            add required channel option named "%{_n}%" with description "%{_d}%" to options of {_v}
+        
+        else:
+            add channel option named "%{_n}%" with description "%{_d}%" to options of {_v}
+    
+    if {_t} = "role":
+        if {_o} = false:
+            add required role option named "%{_n}%" with description "%{_d}%" to options of {_v}
+        
+        else:
+            add role option named "%{_n}%" with description "%{_d}%" to options of {_v}
+
+
+function builderAddSubCmd(n: string, d: string) :: object:
+    set {_r} to new sub command named {_n} with description {_d}
+    return {_r}
+
+function builderSlashUpdate(slash: object, name: text):
+
+
+    delete {local::%{_name}%}
+    set {local::%{_name}%} to {_slash}
+
+    update command {local::*} locally in guild with id "%yaml value "guild" from "plugins/Skript/scripts/Fauna/config/config.yml"%"
+
+    delete {global::%{_name}%}
+    set {global::%{_name}%} to {_slash}
+
+    update command {global::*} globally in bot "%yaml value "bot" from "plugins/Skript/scripts/Fauna/config/config.yml"%"
+
+function timespanFormat(value: timespan) :: text:
+    set {_str} to "%{_value}%"
+    set {_l::*} to split {_str} at " "
+    loop {_l::*}:
+        delete {_i}
+        set {_i} to loop-value parsed as a number
+        {_i} is set
+        set {_i} to round({_i})
+        replace every "%loop-value%" in {_str} with "%{_i}%"
+
+        replace every " seconds" in {_str} with " secs"
+        replace every " second" in {_str} with " sec"
+
+        replace every " minutes" in {_str} with " mins"
+        replace every " minute" in {_str} with " min"
+
+        replace every " hours" in {_str} with " hrs"
+        replace every " hour" in {_str} with " hr"
+
+        replace every " days" in {_str} with " days"
+        replace every " day" in {_str} with " day"
+        replace every " and" in {_str} with ""
+
+    return "%{_str}%"
+
+function toTimespan(t: text) :: timespan:
+    set {_conversion::s} to "SECONDS"
+    set {_conversion::m} to "MINUTES"
+    set {_conversion::h} to "HOURS"
+    set {_conversion::d} to "DAYS"
+    set {_l} to length of {_t}
+    set {_a} to {_l} - 1
+    set {_l::1} to first {_a} characters of {_t}
+    set {_l::2} to last character of {_t}
+    set {_t} to "%{_l::1}% %{_conversion::%{_l::2}%}%"
+    return ({_t} parsed as timespan)

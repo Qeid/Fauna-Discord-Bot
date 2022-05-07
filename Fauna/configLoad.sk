@@ -1,0 +1,30 @@
+on load:
+
+    load yaml "plugins/Skript/scripts/Fauna/config/config.yml" as "plugins/Skript/scripts/Fauna/config/config.yml"
+    set yaml value "token" from "plugins/Skript/scripts/Fauna/config/config.yml" to "Put token here" if {token} is not set
+    set yaml value "bot" from "plugins/Skript/scripts/Fauna/config/config.yml" to "Put bot name here" if {botname} is not set
+    set yaml value "guild" from "plugins/Skript/scripts/Fauna/config/config.yml" to "Put guild id - for testing purposes" if {guildid} is not set
+    set {botname} to true
+    set {token} to true
+    set {guildid} to true
+
+    save yaml "plugins/Skript/scripts/Fauna/config/config.yml"
+
+    #set presence of bot "{@bot}" to {@presence_type} "{@presence_msg}"
+
+
+define new bot named "%yaml value "bot" from "plugins/Skript/scripts/Fauna/config/config.yml"%":
+    token: "%yaml value "token" from "plugins/Skript/scripts/Fauna/config/config.yml"%"
+    intents: default intents
+    policy: all
+    auto reconnect: true
+    compression: none
+
+command /resetConfig:
+    permission: op
+    trigger:
+        delete {token}
+        delete {botname}
+        delete {guildid}
+        send "Resetted config for Fauna Bot"
+        execute console command "sk reload Fauna/configLoad.sk"
