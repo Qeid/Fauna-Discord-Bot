@@ -1,13 +1,39 @@
-
-
-
-on guild ready:
-    set {_cmd} to builderNewSlash("invite", "Invite link")
-    update command {_cmd} locally in guild with id "%yaml value "guild" from "plugins/Skript/scripts/Fauna/config/config.yml"%"
-    delete {_cmd}
-
 on slash command:
-    if event-string = "invite":
+    set {_string} to event-string
+    if {_string} = "invite":
         set {_row} to new components row
         add new link button with url "https://discord.com/oauth2/authorize?client_id=972574388031488041&permissions=8&scope=applications.commands%%20bot" named "Invite link with administrator"  to components of {_row}
         reply with hidden "**Here, %mention of event-user%**" with components {_row}
+    if {_string} = "coinflip":
+        set {_row} to new components row
+        add "Yes, you should do it" to {_line::*}
+        add "No, you should not do it" to {_line::*}
+        add new primary button with id "coinflip-%event-user%" named "Try again!" to components of {_row}
+        reply with "%random element out of {_line::*}%" with components {_row}
+    if {_string} = "quote":
+        set {_msg} to argument "message" as string
+        if argument "channel" as channel is not set:
+            retrieve message with id "%{_msg}%" in event-channel and store it in {_save}
+            if {_save} is not set:
+                reply with ":x: Failed to parse the `message id` parameter: `It seems like you didn't give me a valid message id, maybe check it again? You also may use the **channel** param to retrieve a message from a different channel.`%nl% :wrench: Command usage: `/quote <message id> [channel]`"
+            reply with ":smile: Message found! `%{_save}%`"
+        else:
+            set {_channel} to argument "channel" as channel
+            {_channel} is set
+            retrieve message with id "%{_msg}%" in channel with id "%discord id of {_channel}%" and store it in {_save}
+            set {_id} to discord id of {_channel}
+            if {_save} is not set:
+                reply with ":x: Failed to parse the `message id` parameter: `It seems like you didn't give me a valid message id, maybe check it again? You also may use the **channel** param to retrieve a message from a different channel.`%nl% :wrench: Command usage: `/quote <message id> [channel]`"
+            reply with ":smile: Message found in %mention of {_id}%! `%{_save}%`"
+
+
+
+
+on button click:
+    set {_button} to event-string
+    if {_button} = "coinflip-%event-user%":
+        set {_row} to new components row
+        add "Yes, you should do it" to {_line::*}
+        add "No, you should not do it" to {_line::*}
+        add new primary button with id "coinflip-%event-user%" named "Try again!" to components of {_row}
+        reply with "%random element out of {_line::*}%" with components {_row}
