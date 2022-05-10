@@ -1,11 +1,13 @@
-on load:
-    set {_cmd} to builderNewSlash("invite", "Invite link")
-    builderSlashUpdate({_cmd}, "invite")
-    delete {_cmd}
 
+
+
+on guild ready:
+    set {_cmd} to builderNewSlash("invite", "Invite link")
+    update command {_cmd} locally in guild with id "%yaml value "guild" from "plugins/Skript/scripts/Fauna/config/config.yml"%"
+    delete {_cmd}
 
 on slash command:
     if event-string = "invite":
         set {_row} to new components row
-        add new link button with url "https://discord.com/api/oauth2/authorize?client_id=968698429222031420&permissions=2147568640&scope=bot%%20applications.commands" named "Invite link with needed permissions"  to components of {_row}
+        add new link button with url "https://discord.com/oauth2/authorize?client_id=972574388031488041&permissions=8&scope=applications.commands%%20bot" named "Invite link with administrator"  to components of {_row}
         reply with hidden "**Here, %mention of event-user%**" with components {_row}
